@@ -35,11 +35,13 @@ Argument	Description
 - -m, --numberparams	Number of parameters to search for if -p isn't specified.
 - -t, --maxthreads	Set the number of threads (up to 15) to search for parameters and payloads. Default: 1
 
-Example :  `python3 src/xsshigeno.py -u https://xss-game.appspot.com/level1/frame -t 10 -n 20`
-
 For all options and arguments:
 
 `python3 xsshigeno.py -h`
+
+## Example 
+`python3 src/xsshigeno.py -u https://xss-game.appspot.com/level1/frame -t 10 -n 20`  
+This will look for the site mentioned, first searching for parameters and then searching for xss using 10 threads and a maximum of 20 payloads to find.
 
 ## Future Improvements
 

@@ -2,7 +2,6 @@ import argparse
 import os
 import sys
 import logging
-from cspbypass import *
 from detect import *
 from paramsearcher import *
 from collections import defaultdict

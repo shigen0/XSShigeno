@@ -41,7 +41,7 @@ For all options and arguments:
 
 ## Example 
 `python3 src/xsshigeno.py -u https://xss-game.appspot.com/level1/frame -t 10 -n 20`  
-This will look for the site mentioned, first searching for parameters and then searching for xss using 10 threads and a maximum of 20 payloads to find.
+This will look for the site mentioned, first searching for parameters and then searching for xss using 10 threads, the default parameters and payloads files and a maximum of 20 payloads to find.
 
 ## Future Improvements
 

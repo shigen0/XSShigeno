@@ -23,7 +23,7 @@ Install the necessary libraries with:
 
 Start with the basic command:
 
-python3 xsshigeno.py -u [URL]
+`python3 xsshigeno.py -u [URL]`
 
 Available Arguments:
 Argument	Description

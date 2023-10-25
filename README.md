@@ -2,7 +2,6 @@
 
 Developed by: yaceno
 Website: https://yaceno.github.io/
-Table of Contents
 
 ## Introduction
 

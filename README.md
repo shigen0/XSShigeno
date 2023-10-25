@@ -24,7 +24,7 @@ Install the necessary libraries with:
 
 Start with the basic command:
 
-`python3 xsshigeno.py -u [URL]`
+`python3 src/xsshigeno.py -u [URL]`
 
 Available Arguments:
 Argument	Description
@@ -37,7 +37,7 @@ Argument	Description
 
 For all options and arguments:
 
-`python3 xsshigeno.py -h`
+`python3 src/xsshigeno.py -h`
 
 ## Example 
 `python3 src/xsshigeno.py -u https://xss-game.appspot.com/level1/frame -t 10 -n 20`  

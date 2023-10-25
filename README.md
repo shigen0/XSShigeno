@@ -1,6 +1,6 @@
 # XSShigeno: Automated XSS Detector
 
-Developed by: yaceno
+Developed by: yaceno  
 Website: https://yaceno.github.io/
 
 ## Introduction

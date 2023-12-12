@@ -41,7 +41,6 @@ def detect(base_url, parameters, payload):
 
     # Navigation and check for alert
     xss_detected = check_xss(full_url)
-
     if xss_detected:
         vulnerable_parameters = check_vulnerable_parameter(parameters,payload,base_url)
         print(GREEN + "[+] XSS Detected : " + payload + f"for parameter(s) : {vulnerable_parameters}" + RESET)

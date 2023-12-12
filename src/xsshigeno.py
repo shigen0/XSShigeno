@@ -28,12 +28,12 @@ def process_payloads(file, vuln_url, params, nbr_payloads, maxthreads, filtered_
     print(f"\n[*] Injecting in parameters {params}")
 
     futures = []
-
     with concurrent.futures.ThreadPoolExecutor(max_workers=maxthreads) as executor:
         for line in file:
-            if any(char in line for char in filtered_chars):
-                continue
-
+            payload = line.strip()
+#             if any(char in payload for char in filtered_chars):
+#                continue
+#            print(line.strip())
             if counter >= nbr_payloads:
                 break
             
@@ -41,7 +41,6 @@ def process_payloads(file, vuln_url, params, nbr_payloads, maxthreads, filtered_
             futures.append(future)
             
             counter += 1
-
             if counter % maxthreads == 0 or counter == nbr_payloads:
                 for future in concurrent.futures.as_completed(futures):
                     result_tuple = future.result()
@@ -64,7 +63,6 @@ def get_parameters(param, vuln_url, nbr_params):
 def main(parameters, url, numberparams, file, numberpayloads, maxthreads, filtered_chars):
 
     params = get_parameters(parameters, url, numberparams)
-
     if not params:
         print(RED + "\n[x] No vulnerable parameters found." + RESET)
         sys.exit(1)

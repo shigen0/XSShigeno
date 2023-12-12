@@ -34,7 +34,6 @@ Argument	Description
 - -f, --filepayloads	Specify a file containing payloads. Default: "payloads.txt"
 - -m, --numberparams	Number of parameters to search for if -p isn't specified.
 - -t, --maxthreads	Set the number of threads (up to 15) to search for parameters and payloads. Default: 1
-- -c, --filtered-chars  Filtered tokens, the payloads with these tokens won't be tested (e.g. -c "script*'*alert"). Use * as the separator between characters.
 
 For all options and arguments:
 

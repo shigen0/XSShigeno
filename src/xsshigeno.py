@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 import argparse
-import concurrent
-import os
+import concurrent.futures
 import sys
-import logging
 from paramsearcher import *
 from collections import defaultdict
 

@@ -1,14 +1,8 @@
-import time
-import requests
-from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoAlertPresentException, TimeoutException
-import threading
-from concurrent.futures import as_completed
 
 RESET = "\033[0m"
 GREEN = "\033[32m"
@@ -55,7 +49,6 @@ class XSSDetector:
         options = Options()
         options.headless = True
         driver = webdriver.Chrome(options=options)    
-
 
         full_url = base_url + "?" + "&".join(f"{p}={payload}" for p in parameters)
 

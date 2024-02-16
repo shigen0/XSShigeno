@@ -11,9 +11,7 @@ Detect cross-site scripting vulnerabilities (XSS) with ease using this python to
 ## Prerequisites
 - Python Version: Python3
 - Required Libraries:
-        requests
         selenium
-        beautifulsoup4
         argparse
 
 Install the necessary libraries with:
@@ -47,6 +45,6 @@ This will look for the site mentioned, first searching for parameters and then s
 
     Introduce payload list variations based on specific needs.
     Curate more targeted payload lists.
-    Implement a verbose mode.
+    Use a unique session for all the tests
     Handle XSS in POST parameters.
     Enhance CSP bypass capabilities.

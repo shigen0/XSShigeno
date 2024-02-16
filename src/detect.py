@@ -18,7 +18,6 @@ class BrowserManager:
     def __init__(self, headless=True):
         self.options = Options()
         self.options.headless = True
-        #self.add_experimental_option("prefs", {"profile.managed_default_content_settings.images": 2})
         self.driver = self.start_browser()
 
     def start_browser(self):

@@ -1,4 +1,2 @@
-requests
 selenium
-beautifulsoup4
 argparse

@@ -1,10 +1,13 @@
+# -*- coding: utf-8 -*-
 import argparse
+import concurrent
 import os
 import sys
 import logging
-from detect import *
 from paramsearcher import *
 from collections import defaultdict
+
+from detect import * # XSSDetector, BrowserManager
 
 RESET = "\033[0m"
 GREEN = "\033[32m"
@@ -12,46 +15,47 @@ YELLOW = "\033[33m"
 RED = "\033[31m"
 BOLD = "\033[1m"
 
-def worker(vuln_url, params, payload):
+def worker(vuln_url, params, payload, browser_manager):
     try:
-        return detect(vuln_url, params, payload)
+        xss_detector = XSSDetector(browser_manager)
+        return xss_detector.detect(vuln_url, params, payload)
     except Exception as e:
         print(f"Error occurred while processing payload {payload}: {e}")
         return None
 
-def process_payloads(file, vuln_url, params, nbr_payloads, maxthreads, filtered_chars):
+
+def process_payloads(file, vuln_url, params, nbr_payloads, maxthreads, filtered_chars, browser_manager):
     counter = 0
     params_payloads_success = defaultdict(list)
-    
-    if maxthreads > 15 : maxthreads = 15
+
+    if maxthreads > 15:
+        maxthreads = 15
 
     print(f"\n[*] Injecting in parameters {params}")
 
-    futures = []
     with concurrent.futures.ThreadPoolExecutor(max_workers=maxthreads) as executor:
+        futures = {}
         for line in file:
-            payload = line.strip()
-#             if any(char in payload for char in filtered_chars):
-#                continue
-#            print(line.strip())
             if counter >= nbr_payloads:
                 break
-            
-            future = executor.submit(worker, vuln_url, params, line.strip())
-            futures.append(future)
-            
-            counter += 1
-            if counter % maxthreads == 0 or counter == nbr_payloads:
-                for future in concurrent.futures.as_completed(futures):
-                    result_tuple = future.result()
-                    if result_tuple:
-                        vuln_params, result = result_tuple
-                        if result:
-                            params_payloads_success[tuple(vuln_params)].append(result)
+            payload = line.strip()
+            future = executor.submit(worker, vuln_url, params, payload, browser_manager)
+            futures[future] = payload
+            counter += 1 
 
-                futures = []
+        for future in concurrent.futures.as_completed(futures):
+            payload = futures[future]
+            try:
+                result_tuple = future.result()
+                if result_tuple:
+                    vuln_params, result = result_tuple
+                    if result:
+                        params_payloads_success[tuple(vuln_params)].append(result)
+            except Exception as e:
+                print(f"Error occurred while processing payload {payload}: {e}")
 
     print_report(params_payloads_success, nbr_payloads)
+
 
 
 def get_parameters(param, vuln_url, nbr_params):
@@ -61,7 +65,7 @@ def get_parameters(param, vuln_url, nbr_params):
     return param_searcher(vuln_url, param, nbr_params)
 
 def main(parameters, url, numberparams, file, numberpayloads, maxthreads, filtered_chars):
-
+    browser_manager = BrowserManager(headless=True)
     params = get_parameters(parameters, url, numberparams)
     if not params:
         print(RED + "\n[x] No vulnerable parameters found." + RESET)
@@ -70,7 +74,8 @@ def main(parameters, url, numberparams, file, numberpayloads, maxthreads, filter
     print("[*] Opening payloads file...")
 
     with open(file, 'r') as file:
-        process_payloads(file, url, params, numberpayloads, maxthreads, filtered_chars.split('*'))
+        process_payloads(file, url, params, numberpayloads, maxthreads, filtered_chars.split('*'), browser_manager)
+    browser_manager.quit_browser()
 
 def print_report(params_payloads_success, nbr_payloads):
     print("\n[*] Report")

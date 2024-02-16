@@ -5,7 +5,7 @@ import sys
 from paramsearcher import *
 from collections import defaultdict
 
-from detect import * # XSSDetector, BrowserManager
+from detect import *
 
 RESET = "\033[0m"
 GREEN = "\033[32m"

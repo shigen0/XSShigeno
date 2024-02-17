@@ -2,6 +2,7 @@
 import argparse
 import concurrent.futures
 import sys
+import time
 from paramsearcher import *
 from collections import defaultdict
 
@@ -26,21 +27,22 @@ def process_payloads(file, vuln_url, params, nbr_payloads, maxthreads, filtered_
     counter = 0
     params_payloads_success = defaultdict(list)
 
-    if maxthreads > 15:
-        maxthreads = 15
+    if maxthreads > 40:
+        maxthreads = 40
 
     print(f"\n[*] Injecting in parameters {params}")
 
+    start_time = time.time()
+
     with concurrent.futures.ThreadPoolExecutor(max_workers=maxthreads) as executor:
         futures = {}
-        for line in file:
+        for counter,line in enumerate(file):
             if counter >= nbr_payloads:
                 break
             payload = line.strip()
             future = executor.submit(worker, vuln_url, params, payload, browser_manager)
             futures[future] = payload
-            counter += 1 
-
+        
         for future in concurrent.futures.as_completed(futures):
             payload = futures[future]
             try:
@@ -51,8 +53,8 @@ def process_payloads(file, vuln_url, params, nbr_payloads, maxthreads, filtered_
                         params_payloads_success[tuple(vuln_params)].append(result)
             except Exception as e:
                 print(f"Error occurred while processing payload {payload}: {e}")
-
-    print_report(params_payloads_success, nbr_payloads)
+    total_time = time.time() - start_time
+    print_report(params_payloads_success, nbr_payloads, total_time)
 
 
 
@@ -75,8 +77,9 @@ def main(parameters, url, numberparams, file, numberpayloads, maxthreads, filter
         process_payloads(file, url, params, numberpayloads, maxthreads, filtered_chars.split('*'), browser_manager)
     browser_manager.quit_browser()
 
-def print_report(params_payloads_success, nbr_payloads):
+def print_report(params_payloads_success, nbr_payloads, time):
     print("\n[*] Report")
+    print(f"[*] Execution time : {round(time,1)} seconds")
     print(f"[*] Number of payloads processed: {nbr_payloads}")
     print(f"[*] Number of successful payloads: {sum(len(v) for v in params_payloads_success.values())}")
     print("[*] Successful payloads with its parameters:")

@@ -12,7 +12,7 @@ class BrowserManager:
     def __init__(self, headless=True):
         self.options = Options()
         self.options.headless = True
-        self.driver = self.start_browser()
+        self.driver = None
 
     def start_browser(self):
         return webdriver.Chrome(options=self.options)

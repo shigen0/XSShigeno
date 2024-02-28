@@ -46,6 +46,5 @@ This will look for the site mentioned, first searching for parameters and then s
 
     Introduce payload list variations based on specific needs.
     Curate more targeted payload lists.
-    Use a unique session for all the tests
     Handle XSS in POST parameters.
     Enhance CSP bypass capabilities.

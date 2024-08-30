@@ -8,43 +8,58 @@ from collections import defaultdict
 import concurrent.futures
 import time
 from itertools import islice
+from selenium.webdriver.chrome.options import Options
 
 class XSSDetector:
     def create_driver(self):
         """
-        Creates a headless Chrome WebDriver instance for browser automation.
+        Creates a headless Chrome WebDriver instance with script injection using CDP.
         
         Returns:
-            A Chrome WebDriver instance configured to run in headless mode.
+            A Chrome WebDriver instance configured to inject JavaScript at page load.
         """
-        options = webdriver.ChromeOptions()
-        options.add_argument("--headless")
-        return webdriver.Chrome(options=options)
+        chrome_options = Options()
+        chrome_options.add_argument("--headless")
+        chrome_options.add_argument("--disable-gpu")
+        chrome_options.add_argument("--no-sandbox")
+        chrome_options.add_argument("--disable-dev-shm-usage")
+        chrome_options.add_experimental_option("prefs", {
+                                                "download_restrictions": 3,
+                                                })
+
+        driver = webdriver.Chrome(options=chrome_options)
+
+        return driver
 
     def check_xss(self, url):
         driver = self.create_driver()
         try:
-            alert_script = """
-            window.__alert_called = false;
-            window.alert = function() {
-                window.__alert_called = true;
-            };
+            script = """
+                (function() {
+                    window.__alert_called = false;
+                    window.alert = function() {
+                        window.__alert_called = true;
+                    };
+                })();
             """
-            
-            driver.execute_script(alert_script)
+            driver.execute_cdp_cmd("Page.addScriptToEvaluateOnNewDocument", {"source": script})
+
             driver.get(url)
-            WebDriverWait(driver, 1).until(
-                lambda d: d.execute_script('document.readyState') == 'complete'
+            WebDriverWait(driver, 3).until(
+                lambda d: d.execute_script('return document.readyState') == 'complete'
             )
-            if driver.execute_script("window.__alert_called;"):
+            alert_called = driver.execute_script("return window.__alert_called;")
+            
+            if alert_called:
                 try:
                     alert = driver.switch_to.alert
                     alert.accept()
                     return True
                 except NoAlertPresentException:
-                    return False
+                    return True 
             else:
                 return False
+
         except TimeoutException:
             return False
         except Exception as e:
@@ -52,6 +67,8 @@ class XSSDetector:
             return False
         finally:
             driver.quit()
+
+
 
     def find_vulnerable_parameters(self, parameters, payload, base_url):
         """

@@ -24,7 +24,6 @@ class XSSDetector:
     def check_xss(self, url):
         driver = self.create_driver()
         try:
-            # Inject the script to initialize the alert_called flag and override the alert function
             alert_script = """
             window.__alert_called = false;
             window.alert = function() {

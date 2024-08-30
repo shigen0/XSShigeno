@@ -1,5 +1,5 @@
 import requests
-from colors import *
+from modules.colors import *
 
 def analyzeFilters(base_url, params):
     """

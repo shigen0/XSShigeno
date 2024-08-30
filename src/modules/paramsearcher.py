@@ -1,5 +1,5 @@
 import requests
-from colors import *
+from modules.colors import *
 
 def send_request(session, base_url, parameter, value):
     """
@@ -41,7 +41,7 @@ def param_searcher(base_url, nbr_params):
     Parameters causing a different response length are considered potentially vulnerable.
     """
     session = requests.Session()
-    with open("params.txt", 'r') as file:
+    with open("wordlists/params.txt", 'r') as file:
         base_size = send_request(session, base_url, "", "")
         vulnerable_parameters = []
 

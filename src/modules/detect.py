@@ -3,11 +3,14 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoAlertPresentException, TimeoutException
-from colors import *
+from modules.colors import *
 from collections import defaultdict
 import concurrent.futures
 import time
 from itertools import islice
+
+MAX_THREADS = 40
+TIMEOUT = 1
 
 class XSSDetector:
     def create_driver(self):
@@ -34,7 +37,7 @@ class XSSDetector:
         driver = self.create_driver()
         try:
             driver.get(url)
-            WebDriverWait(driver, 1).until(EC.alert_is_present())
+            WebDriverWait(driver, TIMEOUT).until(EC.alert_is_present())
             driver.switch_to.alert.accept()
             return True
         except (NoAlertPresentException, TimeoutException):
@@ -77,9 +80,9 @@ class XSSDetector:
         xss_detected = self.check_xss(full_url)
         if xss_detected:
             vulnerable_parameters = self.find_vulnerable_parameters(parameters, payload, base_url)
-            print("|" + GREEN + "[+] XSS Detected: " + payload + f" for parameter(s): {vulnerable_parameters}" + RESET)
+            # print("|" + GREEN + "[+] XSS Detected: " + payload + f" for parameter(s): {vulnerable_parameters}" + RESET)
             return vulnerable_parameters, payload
-        print("|"+RED + "[x] No XSS detected for: " + payload + RESET)
+        # print("|"+RED + "[x] No XSS detected for: " + payload + RESET)
         return None
 
     def payload_detection_worker(self, vuln_url, params, payload):
@@ -97,7 +100,7 @@ class XSSDetector:
         try:
             return self.detect(vuln_url, params, payload)
         except Exception as e:
-            print(f"|"+RED+"[x] Error occurred while processing payload {payload}: {e}")
+            print(f"|"+RED+"[x] Error occurred while processing payload {payload}: {e}"+RESET)
             return None
 
     def process_payloads(self, file, vuln_url, params, nbr_payloads, maxthreads, detected_filters):
@@ -118,7 +121,7 @@ class XSSDetector:
         counter = 0
         params_payloads_success = defaultdict(list)
 
-        if maxthreads > 40:
+        if maxthreads > MAX_THREADS:
             maxthreads = 40
 
         print(f"\n[*] Injecting in parameters {params}")

@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 import argparse
-from detect import *
-from analyzefilters import *
-from paramsearcher import *
-from colors import RED, GREEN, RESET
+from modules.detect import *
+from modules.analyzefilters import *
+from modules.paramsearcher import *
+from modules.colors import RED, GREEN, RESET
 import sys
 
 def get_parameters(param, vuln_url, nbr_params):
@@ -101,7 +101,7 @@ by yaceno : https://yaceno.github.io/
     parser.add_argument('-u', '--url', required=True, help='Vulnerable site')
     parser.add_argument('-p', '--parameters', default="", help='Parameters for testing XSS like "param1,param2,param3". It will search for parameters if not mentioned.')
     parser.add_argument('-n', '--numberpayloads', type=int, default=100, help='Number of payloads to inject. 100 payloads will be injected if not mentioned.')
-    parser.add_argument('-f', '--filepayloads', default="payloads.txt", help='Payloads file. Uses the default one if not mentioned.')
+    parser.add_argument('-f', '--filepayloads', default="wordlists/payloads.txt", help='Payloads file. Uses the default one if not mentioned.')
     parser.add_argument('-m', '--numberparams', type=int, default=50, help='Number of parameters to search for if the -p option is not specified. All parameters will be searched for if not mentioned.')
     parser.add_argument('-t', '--maxthreads', type=int, default=1, help='Number of threads to search for parameters and payloads, max is set to 15, defaut to 1')
     # parser.add_argument('-c', '--filtered-chars', default="", help='Filtered tokens, the payloads with these tokens won\'t be tested (e.g. -c "script*\'*alert"). Use * as the separator between characters.')

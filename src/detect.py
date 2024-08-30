@@ -22,22 +22,34 @@ class XSSDetector:
         return webdriver.Chrome(options=options)
 
     def check_xss(self, url):
-        """
-        Checks a given URL for XSS vulnerability by detecting alert pop-ups.
-        
-        Args:
-            url (str): The URL to test for XSS vulnerability.
-        
-        Returns:
-            bool: True if an XSS alert is detected, False otherwise.
-        """
         driver = self.create_driver()
         try:
+            # Inject the script to initialize the alert_called flag and override the alert function
+            alert_script = """
+            window.__alert_called = false;
+            window.alert = function() {
+                window.__alert_called = true;
+            };
+            """
+            
+            driver.execute_script(alert_script)
             driver.get(url)
-            WebDriverWait(driver, 1).until(EC.alert_is_present())
-            driver.switch_to.alert.accept()
-            return True
-        except (NoAlertPresentException, TimeoutException):
+            WebDriverWait(driver, 1).until(
+                lambda d: d.execute_script('document.readyState') == 'complete'
+            )
+            if driver.execute_script("window.__alert_called;"):
+                try:
+                    alert = driver.switch_to.alert
+                    alert.accept()
+                    return True
+                except NoAlertPresentException:
+                    return False
+            else:
+                return False
+        except TimeoutException:
+            return False
+        except Exception as e:
+            print(f"Error occurred while checking XSS: {e}")
             return False
         finally:
             driver.quit()
@@ -77,9 +89,9 @@ class XSSDetector:
         xss_detected = self.check_xss(full_url)
         if xss_detected:
             vulnerable_parameters = self.find_vulnerable_parameters(parameters, payload, base_url)
-            print("|" + GREEN + "[+] XSS Detected: " + payload + f" for parameter(s): {vulnerable_parameters}" + RESET)
+            # print("|" + GREEN + "[+] XSS Detected: " + payload + f" for parameter(s): {vulnerable_parameters}" + RESET)
             return vulnerable_parameters, payload
-        print("|"+RED + "[x] No XSS detected for: " + payload + RESET)
+        # print("|" + RED + "[x] No XSS detected for: " + payload + RESET)
         return None
 
     def payload_detection_worker(self, vuln_url, params, payload):

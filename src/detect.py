@@ -29,26 +29,24 @@ class XSSDetector:
 
         driver = webdriver.Chrome(options=chrome_options)
 
+        script = """
+        window.__alert_called = false;
+        window.alert = function() {
+            window.__alert_called = true;
+        };
+        """
+        driver.execute_cdp_cmd("Page.addScriptToEvaluateOnNewDocument", {"source": script})
+
         return driver
 
     def check_xss(self, url):
         driver = self.create_driver()
         try:
-            script = """
-                (function() {
-                    window.__alert_called = false;
-                    window.alert = function() {
-                        window.__alert_called = true;
-                    };
-                })();
-            """
-            driver.execute_cdp_cmd("Page.addScriptToEvaluateOnNewDocument", {"source": script})
-
             driver.get(url)
-            WebDriverWait(driver, 3).until(
+            WebDriverWait(driver, 1).until(
                 lambda d: d.execute_script('return document.readyState') == 'complete'
             )
-            alert_called = driver.execute_script("return window.__alert_called;")
+            alert_called = driver.execute_script("window.__alert_called;")
             
             if alert_called:
                 try:

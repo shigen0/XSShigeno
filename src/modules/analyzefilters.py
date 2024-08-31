@@ -40,8 +40,7 @@ def analyzeFilters(base_url, params):
         '%', 
         '^', 
         '&', 
-        '(', 
-        ')', 
+        '(', ')', 
         '=', 
         '|', 
         '[', ']', 
@@ -50,8 +49,7 @@ def analyzeFilters(base_url, params):
         ':', 
         ',', 
         '.', 
-        '<', 
-        '>',
+        '<', '>',
        '?'
        ]
     

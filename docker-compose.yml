@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  xsshigeno:
+    build: .
+    image: xsshigeno:latest
+    container_name: xsshigeno_container
+    command: python3 src/xsshigeno.py -u https://xss-game.appspot.com/level1/frame -n 100 -t 30 -p query
+    volumes:
+      - .:/app
+    stdin_open: true
+    tty: true

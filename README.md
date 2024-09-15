@@ -1,4 +1,4 @@
-# XSShigeno: Automated XSS Detector
+# XSShigeno: Automated XSS Fuzzer
 
 Developed by: yaceno  
 
